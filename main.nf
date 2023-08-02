@@ -11,7 +11,7 @@ process filter_bam {
     publishDir "${params.outdir}", mode: 'copy', overwrite: true, saveAs: stripPrefix
 
     input:
-        path bam
+        tuple path(bam), path(bai)
     
     output:
         path "output/*.bam"
@@ -39,6 +39,7 @@ workflow {
     // and then run the filter_bam process on them
     Channel
         .fromPath("${params.indir}/*.bam")
+        .map { it -> [it, file("${it}.bai", checkIfExists: true)]}
         .ifEmpty { error "No files found matching the pattern ${params.indir}/*.bam" }
         | filter_bam
 }
