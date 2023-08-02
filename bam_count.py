@@ -6,10 +6,6 @@ Later, csv files from all input bam files will be integrated using Pandas.
 
 USAGE:
 
-ml Python/3.10.8-GCCcore-12.2.0
-ml Pysam/0.18.0-GCC-11.2.0
-ml SciPy-bundle/2023.02-gfbf-2022b
-
 python bam_count.py input_bam_file output_bam_file
 '''
 
