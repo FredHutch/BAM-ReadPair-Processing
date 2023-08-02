@@ -1,0 +1,44 @@
+#!/usr/bin/env nextflow
+
+// Enable DSL 2 syntax
+nextflow.enable.dsl = 2
+
+process filter_bam {
+    def stripPrefix = { fileName ->
+      fileName.replace("output/", "")
+    }
+
+    publishDir "${params.outdir}", mode: 'copy', overwrite: true, saveAs: stripPrefix
+
+    input:
+        path bam
+    
+    output:
+        path "output/*.bam"
+
+    """
+bam_count.py "${bam}" "output/${bam}"
+    """
+}
+
+workflow {
+
+    if ( params.help ){
+        log.info"""
+        BAM-ReadPair-Processing
+
+        Required Arguments:
+            --indir         Folder containing BAM files to process
+            --outdir        Folder where output BAM files will be written
+
+        """
+        exit 0
+    }
+
+    // Make a channel with all of the BAM files
+    // and then run the filter_bam process on them
+    Channel
+        .fromPath("${params.indir}/*.bam")
+        .ifEmpty { error "No files found matching the pattern ${params.indir}/*.bam" }
+        | filter_bam
+}
