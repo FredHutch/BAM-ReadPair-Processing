@@ -64,8 +64,6 @@ def process_and_write_bam(input_bam_file, output_bam_file):
 
     return readpair_count, read1_count, read2_count
 
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('input_bam_file', type=str, help='input bam file')
