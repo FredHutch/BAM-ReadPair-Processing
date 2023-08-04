@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 '''
 This script will take one BWA-MEM bam file as the input, 
 and output one bam file with only closely and properly aligned read pairs. 
