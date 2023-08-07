@@ -16,7 +16,13 @@ process filter_bam {
     output:
         path "output/*.bam"
 
-    """
+    """#!/bin/bash
+set -e
+
+# Create the output directory
+mkdir -p output
+
+# Run the bam_count.py script
 bam_count.py "${bam}" "output/${bam}"
     """
 }
