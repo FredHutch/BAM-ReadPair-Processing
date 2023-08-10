@@ -79,9 +79,7 @@ def process_and_write_bam(input_bam_file, output_bam_file):
 
         for data in readpair_dict.values():
             # Get the highest alignment score
-            max_score_data = max([x['AS'] for x in data])
-            # Filter the data to only keep readpairs with the maximum score
-            data = [x for x in data if x['AS'] == max_score_data]
+            max_score_data = max(data, key=lambda x: x['AS'])
 
             # count the read pair if there is only one with the highest AS
             if len(data) == 1:
