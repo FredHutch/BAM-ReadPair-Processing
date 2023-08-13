@@ -106,8 +106,9 @@ def main():
         args.input_bam_file,
         args.output_bam_file
     )
+    # add column names
+    readpair_counts_df = pd.DataFrame(readpair_counts.items(), columns=["reference_name", sample_name])
 
-    readpair_counts_df = pd.Series(readpair_counts)
 
     readpair_counts_df.to_csv(
         output_path + '/' + sample_name + "_readpair_counts.csv"
