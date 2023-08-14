@@ -4,11 +4,7 @@
 nextflow.enable.dsl = 2
 
 process filter_bam {
-    def stripPrefix = { fileName ->
-      fileName.replace("output/", "")
-    }
-
-    publishDir "${params.outdir}", mode: 'copy', overwrite: true, saveAs: stripPrefix
+    publishDir "${params.outdir}", mode: 'copy', overwrite: true
 
     input:
         tuple path(bam), path(bai)
