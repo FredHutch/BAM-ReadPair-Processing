@@ -106,12 +106,20 @@ def main():
         args.input_bam_file,
         args.output_bam_file
     )
-    # add column names
-    readpair_counts_df = pd.DataFrame(readpair_counts.items(), columns=["reference_name", sample_name])
 
+    readpair_counts_df = pd.DataFrame(readpair_counts.items(), columns=["reference_name", sample_name])
+    # calculate the total number of mapped pairs based on other reference count
+    total_mapped_pairs = readpair_counts_df[sample_name].sum()
+
+    # create a header df with 'Total_mapped_pairs'
+    total_mapped_df = pd.DataFrame({"reference_name": ["Total_mapped_pairs"], 
+                                    sample_name: [total_mapped_pairs]})
+
+    # then put the header and reference counts together
+    readpair_counts_df = pd.concat([total_mapped_df, readpair_counts_df], ignore_index=True)
 
     readpair_counts_df.to_csv(
-        output_path + '/' + sample_name + "_readpair_counts.csv"
+        output_path + '/' + sample_name + "_readpair_counts.csv", index=False
     )
 
 
