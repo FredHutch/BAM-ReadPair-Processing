@@ -99,7 +99,7 @@ def main():
 
     args = parser.parse_args()
 
-    sample_name = os.path.basename(args.output_bam_file).rstrip('.bam')
+    sample_name = os.path.basename(args.output_bam_file)[:-len('.bam')]
     output_path = os.path.dirname(args.output_bam_file)
 
     readpair_counts = process_and_write_bam(
