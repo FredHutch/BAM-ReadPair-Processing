@@ -11,6 +11,7 @@ process filter_bam {
     
     output:
         path "output/*.bam"
+        path "output/*_readpair_counts.csv"
 
     """#!/bin/bash
 set -e
