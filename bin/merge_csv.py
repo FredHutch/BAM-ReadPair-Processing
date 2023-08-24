@@ -30,8 +30,10 @@ def merge_csv_files(directory_path):
                 how='outer'
             )
         n += 1
-
+    
     output_file = os.path.join(directory_path, 'merged_reference_count.csv')
+    # Repalce NaN with zero
+    merged_df = merged_df.fillna(0)
     merged_df.to_csv(output_file, index=False)
 
 
