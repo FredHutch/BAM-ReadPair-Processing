@@ -58,7 +58,10 @@ def process_and_write_bam(input_bam_file, output_bam_file):
             assert alignment.is_read1
 
             # mate will be used to store r2 alignment
-            mate = seqbam.mate(alignment)
+            try:
+                mate = seqbam.mate(alignment)
+            except ValueError:
+                continue  # skip this read and proceed to the next. This will avoid the error caused by missing of the mate due to previous filtering steps.
             assert mate.is_read2
 
             readpair_dict[alignment.query_name].append({
