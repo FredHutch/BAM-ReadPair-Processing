@@ -34,6 +34,10 @@ def merge_csv_files(directory_path):
     output_file = os.path.join(directory_path, 'merged_reference_count.csv')
     # Repalce NaN with zero
     merged_df = merged_df.fillna(0)
+    
+    # Reindex based on colnames
+    merged_df = merged_df.reindex(sorted(merged_df.columns), axis=1)
+
     merged_df.to_csv(output_file, index=False)
 
 
