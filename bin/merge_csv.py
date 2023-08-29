@@ -36,7 +36,7 @@ def merge_csv_files(directory_path):
     merged_df = merged_df.fillna(0)
     
     # Reindex based on colnames
-    merged_df = merged_df.reindex(sorted(merged_df.columns), axis=1)
+    merged_df[sorted(merged_df)]
 
     merged_df.to_csv(output_file, index=False)
 
