@@ -16,84 +16,24 @@ import pandas as pd
 from collections import defaultdict
 import argparse
 
-
-def skip_alignment(alignment, max_distance=1000) -> bool:
-    """Return True if the alignment should be skipped"""
-
-    if not alignment.is_proper_pair:
-        return True
-    elif alignment.is_read2:
-        return True
-    elif alignment.next_reference_id != alignment.reference_id:
-        return True
-    elif calc_distance(alignment) > max_distance:
-        return True
-    else:
-        return False
-
-
-def calc_distance(alignment) -> int:
-    """Calculate the distance between reads in a pair."""
-
-    return abs(alignment.next_reference_start - alignment.reference_start)
-
-
 def process_and_write_bam(input_bam_file, output_bam_file):
-
     # input bam file
-    # (note: using the 'with' syntax ensures proper file handle closure)
     with pysam.AlignmentFile(input_bam_file, "rb", threads=30) as seqbam:
-
-        # use defaultdict to init readpair_dict
-        readpair_dict = defaultdict(list)
-
-        # skip if not qualified
-        for alignment in seqbam:
-
-            # Check if the alignment should be skipped
-            if skip_alignment(alignment):
-                continue
-
-            # The 'alignment' should always be read1
-            assert alignment.is_read1
-
-            # mate will be used to store r2 alignment
-            try:
-                mate = seqbam.mate(alignment)
-            except ValueError:
-                continue  # skip this read and proceed to the next. This will avoid the error caused by missing of the mate due to previous filtering steps.
-            assert mate.is_read2
-
-            readpair_dict[alignment.query_name].append({
-                "AS": int(alignment.get_tag('AS')) + int(mate.get_tag('AS')),
-                "reference_name": alignment.reference_name,
-                "alignment": alignment,
-                "mate": mate
-            })
-
-        # Copy the header to use in the output
+        # Copy the header of original bam files
         bam_header = seqbam.header
 
     # output bam file
     with pysam.AlignmentFile(output_bam_file, 'wb', header=bam_header) as outfile:
-
         # init a dict to count the READ PAIRS per reference
         readpair_count = defaultdict(int)
 
-        for data in readpair_dict.values():
-            # Get the highest alignment score
-            max_score_data = max(data, key=lambda x: x['AS'])
-
-            # count the read pair if there is only one with the highest AS
-            if len(data) == 1:
-                readpair_count[max_score_data['reference_name']] += 1
-
-                # Write out the alignments to the output BAM file
-                outfile.write(max_score_data["alignment"])
-                outfile.write(max_score_data["mate"])
+        # No need to check for skip_alignment or max AS score due to proprocessing with Samtools
+        for alignment in seqbam:
+            # Read1 + Read2 = 1
+            readpair_count[alignment.reference_name] += 0.5
+            outfile.write(alignment)
 
     return readpair_count
-
 
 def main():
     parser = argparse.ArgumentParser()
