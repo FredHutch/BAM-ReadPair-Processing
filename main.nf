@@ -7,20 +7,27 @@ process filter_bam {
     publishDir "${params.outdir}", mode: 'copy', overwrite: true
 
     input:
-        tuple path(bam), path(bai)
+        path bam
     
     output:
+        path "output/*_filtered.bam", emit: fbam
+        path "output/*_filtered.bam.bai", emit: fbai
+
         path "output/*.bam", emit: bam
         path "output/*_readpair_counts.csv", emit: csv
 
     """#!/bin/bash
-set -e
+    set -e
 
-# Create the output directory
-mkdir -p output
+    # Create the output directory
+    mkdir -p output
 
-# Run the bam_count.py script
-bam_count.py "${bam}" "output/${bam}"
+    # Run Samtools
+    samtools view -h -b -q 30 -f 0x3 -F 0x4 ${bam} > output/${bam.baseName}_filtered.bam
+    samtools index output/${bam.baseName}_filtered.bam
+
+    # Run the bam_count.py script
+    bam_count.py "output/${bam.baseName}_filtered.bam" "output/${bam}"
     """
 }
 
@@ -59,7 +66,7 @@ workflow {
     // and then run the filter_bam process on them
     Channel
         .fromPath("${params.indir}/*.bam")
-        .map { it -> [it, file("${it}.bai", checkIfExists: true)]}
+        // .map { it -> [it, file("${it}.bai", checkIfExists: true)]}
         .ifEmpty { error "No files found matching the pattern ${params.indir}/*.bam" }
         | filter_bam
 
