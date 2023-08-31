@@ -22,16 +22,16 @@ def process_and_write_bam(input_bam_file, output_bam_file):
         # Copy the header of original bam files
         bam_header = seqbam.header
 
-    # output bam file
-    with pysam.AlignmentFile(output_bam_file, 'wb', header=bam_header) as outfile:
-        # init a dict to count the READ PAIRS per reference
-        readpair_count = defaultdict(int)
+        # output bam file
+        with pysam.AlignmentFile(output_bam_file, 'wb', header=bam_header) as outfile:
+            # init a dict to count the READ PAIRS per reference
+            readpair_count = defaultdict(int)
 
-        # No need to check for skip_alignment or max AS score due to proprocessing with Samtools
-        for alignment in seqbam:
-            # Read1 + Read2 = 1
-            readpair_count[alignment.reference_name] += 0.5
-            outfile.write(alignment)
+            # No need to check for skip_alignment or max AS score due to proprocessing with Samtools
+            for alignment in seqbam:
+                # Read1 + Read2 = 1
+                readpair_count[alignment.reference_name] += 0.5
+                outfile.write(alignment)
 
     return readpair_count
 
