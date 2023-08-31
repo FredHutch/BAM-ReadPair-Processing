@@ -30,7 +30,12 @@ def process_and_write_bam(input_bam_file, output_bam_file):
             # No need to check for skip_alignment or max AS score due to proprocessing with Samtools
             for alignment in seqbam:
                 # Read1 + Read2 = 1
-                readpair_count[alignment.reference_name] += 0.5
+                if alignment.is_read1:
+                    ref_name = alignment.reference_name + '_R1'
+                    readpair_count[ref_name] += 1
+                elif alignment.is_read2:
+                    ref_name = alignment.reference_name + '_R2'
+                    readpair_count[ref_name] += 1
                 outfile.write(alignment)
 
     return readpair_count
@@ -55,7 +60,7 @@ def main():
     total_mapped_pairs = readpair_counts_df[sample_name].sum()
 
     # create a header df with 'Total_mapped_pairs'
-    total_mapped_df = pd.DataFrame({"reference_name": ["Total_mapped_pairs"], 
+    total_mapped_df = pd.DataFrame({"reference_name": ["Total_mapped_reads"], 
                                     sample_name: [total_mapped_pairs]})
 
     # then put the header and reference counts together
