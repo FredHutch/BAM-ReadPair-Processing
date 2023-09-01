@@ -11,6 +11,7 @@ process filter_bam {
     
     output:
         path "output/*.bam", emit: bam
+        path "output/*.bam.bai", emit: bai
         path "output/*_readpair_counts.csv", emit: csv
 
     """#!/bin/bash
@@ -19,8 +20,10 @@ set -e
 # Create the output directory
 mkdir -p output
 
-# Run the bam_count.py script
-bam_count.py "${bam}" "output/${bam}"
+filter_bam.sh "${bam}" "output/${bam}" ${task.cpus}
+
+# Run the bam_count.py script, writing to output/SampleName_readpair_counts.csv
+bam_count.py "output/${bam}" ${task.cpus}
     """
 }
 
