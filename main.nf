@@ -14,12 +14,7 @@ process filter_bam {
         path "output/*_readpair_counts.csv", emit: csv
 
     """#!/bin/bash
-<<<<<<< HEAD
-    set -e
-    module load SAMtools/1.17-GCC-12.2.0
-=======
 set -e
->>>>>>> parent of 9baef72 (Update main.nf)
 
 # Create the output directory
 mkdir -p output
