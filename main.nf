@@ -18,6 +18,7 @@ process filter_bam {
 
     """#!/bin/bash
     set -e
+    module load SAMtools/1.17-GCC-12.2.0
 
     # Create the output directory
     mkdir -p output
