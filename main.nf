@@ -26,10 +26,10 @@ process count_bam {
     publishDir "${params.outdir}", mode: 'copy', overwrite: true
 
     input:
-        tuple path(bam), path(bai)
+        tuple path("output/*.bam"), path("output/*.bam.bai")
     
     output:
-        path "*_readpair_counts.csv"
+        path "output/*_readpair_counts.csv"
 
     """#!/bin/bash
 set -e
