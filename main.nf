@@ -26,7 +26,7 @@ process count_bam {
     publishDir "${params.outdir}", mode: 'copy', overwrite: true
 
     input:
-        tuple path("output/*.bam"), path("output/*.bam.bai")
+        tuple path(bam), path(bai)
     
     output:
         path "output/*_readpair_counts.csv"
