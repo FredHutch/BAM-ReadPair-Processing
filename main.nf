@@ -10,9 +10,7 @@ process filter_bam {
         tuple path(bam), path(bai)
     
     output:
-        path "output/*.bam", emit: bam
-        path "output/*.bam.bai", emit: bai
-        path "output/*_readpair_counts.csv", emit: csv
+        tuple path("output/*.bam"), path("output/*.bam.bai")
 
     """#!/bin/bash
 set -e
@@ -21,9 +19,23 @@ set -e
 mkdir -p output
 
 filter_bam.sh "${bam}" "output/${bam}" ${task.cpus}
+    """
+}
 
-# Run the bam_count.py script, writing to output/SampleName_readpair_counts.csv
-bam_count.py "output/${bam}" ${task.cpus}
+process count_bam {
+    publishDir "${params.outdir}", mode: 'copy', overwrite: true
+
+    input:
+        tuple path(bam), path(bai)
+    
+    output:
+        path "*_readpair_counts.csv"
+
+    """#!/bin/bash
+set -e
+
+# Run the bam_count.py script, writing to SampleName_readpair_counts.csv
+bam_count.py "${bam}" ${task.cpus}
     """
 }
 
@@ -65,9 +77,10 @@ workflow {
         .map { it -> [it, file("${it}.bai", checkIfExists: true)]}
         .ifEmpty { error "No files found matching the pattern ${params.indir}/*.bam" }
         | filter_bam
+        | count_bam
 
     // Combine all of the CSVs
     merge_csv(
-        filter_bam.out.csv.toSortedList()
+        count_bam.out.toSortedList()
     )
 }
