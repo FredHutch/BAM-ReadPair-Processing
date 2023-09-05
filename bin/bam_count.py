@@ -71,7 +71,7 @@ def main():
     )
 
     readpair_counts_df.to_csv(
-        'output/' + sample_name + "_readpair_counts.csv",
+        sample_name + "_readpair_counts.csv",
         index=False
     )
 
