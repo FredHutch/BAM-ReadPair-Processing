@@ -29,7 +29,7 @@ process count_bam {
         tuple path(bam), path(bai)
     
     output:
-        path "output/*_readpair_counts.csv"
+        path "*_readpair_counts.csv"
 
     """#!/bin/bash
 set -e
